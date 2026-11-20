@@ -3,13 +3,21 @@ FROM python:3.14.10-slim-trixie AS build
 
 RUN python -m venv /venv
 COPY requirements.txt /tmp/requirements.txt
-RUN /venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt
+RUN /venv/bin/pip install --no-cache-dir -r /tmp/requirements.txt \
+ && /venv/bin/pip uninstall -y pip
 
 
-# Runtime stage: same base, no pip cache or build leftovers.
+# Runtime stage: same base, no pip and no build leftovers.
 FROM python:3.14.10-slim-trixie
 
-RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin app
+# Pick up Debian security fixes released after the base image was built,
+# and drop pip (not needed at runtime; its vendored libs were most of the
+# fixable Trivy findings).
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && rm -rf /var/lib/apt/lists/* \
+ && python -m pip uninstall -y pip \
+ && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin app
 
 COPY --from=build /venv /venv
 WORKDIR /app
