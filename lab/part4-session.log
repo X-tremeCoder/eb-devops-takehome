@@ -1,0 +1,512 @@
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh up[27m[16D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mu[27mp[?2004l
+==> applying cluster environment (cluster-state/)
+namespace/debug-lab created
+Error from server (NotFound): error when creating "cluster-state/limits.yaml": namespaces "debug-lab" not found
+==> installing the broken chart
+Release "debug-lab" does not exist. Installing it now.
+Error: server-side apply failed for object debug-lab/migrate batch/v1, Kind=Job: Job.batch "migrate" is invalid: spec.template.spec.restartPolicy: Required value: valid values: "OnFailure", "Never"
+
+[2mhelm reported an error. That is not your machine misbehaving —[0m
+[2mit is part of the exercise. Read the error; it is evidence.[0m
+
+Lab is (partially) installed. Investigate with kubectl, fix the chart,
+re-run './scenario.sh up' to apply your fixes, and './scenario.sh verify'
+to check progress.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004hcclear[?2004l
+[3J[H[2J[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mcd ~/eb-devops-takehome/lab && git add broken-chart && git commit -m "lab: fix migrate Job restartPolicy"[27m[105D[27mc[27md[27m [27m~[27m/[27me[27mb[27m-[27md[27me[27mv[27mo[27mp[27ms[27m-[27mt[27ma[27mk[27me[27mh[27mo[27mm[27me[27m/[27ml[27ma[27mb[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27mf[27mi[27mx[27m [27mm[27mi[27mg[27mr[27ma[27mt[27me[27m [27mJ[27mo[27mb[27m [27mr[27me[27ms[27mt[27ma[27mr[27mt[27mP[27mo[27ml[27mi[27mc[27my[27m"[?2004l
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	[31mpart4-session.log[m
+
+nothing added to commit but untracked files present (use "git add" to track)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh up[27m[16D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mu[27mp\[?2004l
+[0m[27m[24m[J> [K[?2004h[?2004l
+==> applying cluster environment (cluster-state/)
+limitrange/debug-lab-guardrails created
+namespace/debug-lab unchanged
+==> installing the broken chart
+level=WARN msg="upgrade failed" name=debug-lab error="failed to create resource: server-side apply failed for object debug-lab/migrate batch/v1, Kind=Job: Job.batch \"migrate\" is invalid: spec.template.spec.restartPolicy: Required value: valid values: \"OnFailure\", \"Never\""
+Error: UPGRADE FAILED: failed to create resource: server-side apply failed for object debug-lab/migrate batch/v1, Kind=Job: Job.batch "migrate" is invalid: spec.template.spec.restartPolicy: Required value: valid values: "OnFailure", "Never"
+
+[2mhelm reported an error. That is not your machine misbehaving —[0m
+[2mit is part of the exercise. Read the error; it is evidence.[0m
+
+Lab is (partially) installed. Investigate with kubectl, fix the chart,
+re-run './scenario.sh up' to apply your fixes, and './scenario.sh verify'
+to check progress.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh verify[27m[20D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mv[27me[27mr[27mi[27mf[27my[?2004l
+==> verifying goal state in namespace debug-lab
+  [31mFAIL[0m  migrate Job has not completed (does it exist? did the chart even install cleanly?)
+  [31mFAIL[0m  deployment backend: 0/1 ready
+  [31mFAIL[0m  deployment gateway: 0/1 ready
+  [31mFAIL[0m  deployment worker: 0/1 ready
+  [31mFAIL[0m  deployment reporter: 0/1 ready
+  [31mFAIL[0m  deployment metrics: 0/1 ready
+  [32mPASS[0m  no pods in CrashLoopBackOff
+  [31mFAIL[0m  ServiceAccount debug-lab/reporter cannot list pods
+  [31mFAIL[0m  backend does not answer on http://backend:8080/healthz
+  [31mFAIL[0m  gateway /status does not report backend=ok
+  [31mFAIL[0m  reporter /report does not return a pod count
+
+[31m10 check(s) failing[0m, 1 passing. Keep digging — every failure is a symptom.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004hcclear[?2004l
+[3J[H[2J[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7msed -i '' 's/restartPolicy: Always/restartPolicy: Never/' broken-chart/templates/migrate-job.yaml[27m[97D[27ms[27me[27md[27m [27m-[27mi[27m [27m'[27m'[27m [27m'[27ms[27m/[27mr[27me[27ms[27mt[27ma[27mr[27mt[27mP[27mo[27ml[27mi[27mc[27my[27m:[27m [27mA[27ml[27mw[27ma[27my[27ms[27m/[27mr[27me[27ms[27mt[27ma[27mr[27mt[27mP[27mo[27ml[27mi[27mc[27my[27m:[27m [27mN[27me[27mv[27me[27mr[27m/[27m'[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m/[27mt[27me[27mm[27mp[27ml[27ma[27mt[27me[27ms[27m/[27mm[27mi[27mg[27mr[27ma[27mt[27me[27m-[27mj[27mo[27mb[27m.[27my[27ma[27mm[27ml[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff broken-chart[27m[21D[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[?2004l
+[?1h=[1mdiff --git a/lab/broken-chart/templates/migrate-job.yaml b/lab/broken-chart/templates/migrate-job.yaml[m[m
+[1mindex e9d5aa2..1862117 100644[m[m
+[1m--- a/lab/broken-chart/templates/migrate-job.yaml[m[m
+[1m+++ b/lab/broken-chart/templates/migrate-job.yaml[m[m
+[36m@@ -13,7 +13,7 @@[m [mspec:[m[m
+       labels:[m[m
+         app: migrate[m[m
+     spec:[m[m
+[31m-      restartPolicy: Always[m[m
+[32m+[m[32m      restartPolicy: Never[m[m
+       containers:[m[m
+         - name: migrate[m[m
+           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"[m[m
+[K[?1l>[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit add broken-chart && git commit -m "lab: fix migrate Job restartPolicy (Always is invalid for a Job)"[27m[104D[27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27mf[27mi[27mx[27m [27mm[27mi[27mg[27mr[27ma[27mt[27me[27m [27mJ[27mo[27mb[27m [27mr[27me[27ms[27mt[27ma[27mr[27mt[27mP[27mo[27ml[27mi[27mc[27my[27m [27m([27mA[27ml[27mw[27ma[27my[27ms[27m [27mi[27ms[27m [27mi[27mn[27mv[27ma[27ml[27mi[27md[27m [27mf[27mo[27mr[27m [27ma[27m [27mJ[27mo[27mb[27m)[27m"[?2004l
+[main 434423e] lab: fix migrate Job restartPolicy (Always is invalid for a Job)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh up[27m[16D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mu[27mp[?2004l
+==> applying cluster environment (cluster-state/)
+limitrange/debug-lab-guardrails unchanged
+namespace/debug-lab unchanged
+==> installing the broken chart
+Release "debug-lab" has been upgraded. Happy Helming!
+NAME: debug-lab
+LAST DEPLOYED: Fri Nov 20 17:09:34 2026
+NAMESPACE: [36mdebug-lab[0m
+STATUS: [32mdeployed[0m
+REVISION: 3
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+debug-lab installed into namespace debug-lab.
+
+Goal state:
+  * migrate Job: Completed
+  * backend, gateway, worker, reporter, metrics: all pods Running and 1/1 Ready
+  * gateway /status reports {"self":"ok","backend":"ok",...}
+
+Check your progress at any time:
+  ./scenario.sh verify
+
+Lab is (partially) installed. Investigate with kubectl, fix the chart,
+re-run './scenario.sh up' to apply your fixes, and './scenario.sh verify'
+to check progress.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh verify[27m[20D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mv[27me[27mr[27mi[27mf[27my[?2004l
+==> verifying goal state in namespace debug-lab
+  [31mFAIL[0m  migrate Job has not completed (does it exist? did the chart even install cleanly?)
+  [31mFAIL[0m  deployment backend: 0/1 ready
+  [31mFAIL[0m  deployment gateway: 0/1 ready
+  [31mFAIL[0m  deployment worker: 0/1 ready
+  [31mFAIL[0m  deployment reporter: 0/1 ready
+  [31mFAIL[0m  deployment metrics: 0/1 ready
+  [32mPASS[0m  no pods in CrashLoopBackOff
+  [31mFAIL[0m  ServiceAccount debug-lab/reporter cannot list pods
+  [31mFAIL[0m  backend does not answer on http://backend:8080/healthz
+  [31mFAIL[0m  gateway /status does not report backend=ok
+  [31mFAIL[0m  reporter /report does not return a pod count
+
+[31m10 check(s) failing[0m, 1 passing. Keep digging — every failure is a symptom.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab get pods[27m[29D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27mg[27me[27mt[27m [27mp[27mo[27md[27ms[?2004l
+NAME                        READY   STATUS                       RESTARTS   AGE
+backend-7948fd6b4b-hxt7w    0/1     CreateContainerConfigError   0          4m55s
+gateway-5cbdcd4bf8-rsvlk    0/1     CreateContainerConfigError   0          4m55s
+metrics-547dccf75-hpb55     0/1     CreateContainerConfigError   0          4m55s
+migrate-r8gxh               0/1     CreateContainerConfigError   0          15s
+reporter-6f8bff6b8d-tvsd7   0/1     CreateContainerConfigError   0          4m55s
+worker-5fcd6b9b6b-p46hp     0/1     CreateContainerConfigError   0          4m55s
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004hcclear[?2004l
+[3J[H[2J[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab describe pod -l app=backend | tail -15[27m[59D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27md[27me[27ms[27mc[27mr[27mi[27mb[27me[27m [27mp[27mo[27md[27m [27m-[27ml[27m [27ma[27mp[27mp[27m=[27mb[27ma[27mc[27mk[27me[27mn[27md[27m [27m|[27m [27mt[27ma[27mi[27ml[27m [27m-[27m1[27m5[?2004l
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                  From               Message
+  ----     ------     ----                 ----               -------
+  Normal   Scheduled  5m26s                default-scheduler  Successfully assigned debug-lab/backend-7948fd6b4b-hxt7w to demo-control-plane
+  Normal   Pulling    5m24s                kubelet            spec.containers{backend}: Pulling image "docker.io/ebinterview/eb-debug-app:1.0.1"
+  Normal   Pulled     5m17s                kubelet            spec.containers{backend}: Successfully pulled image "docker.io/ebinterview/eb-debug-app:1.0.1" in 1.423s (7.768s including waiting). Image size: 3279587 bytes.
+  Warning  Failed     6s (x25 over 5m17s)  kubelet            spec.containers{backend}: Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "backend-7948fd6b4b-hxt7w_debug-lab(092911e3-e2ae-45d5-abe7-eb72e622f77e)", container: backend)
+  Normal   Pulled     6s (x24 over 5m17s)  kubelet            spec.containers{backend}: Container image "docker.io/ebinterview/eb-debug-app:1.0.1" already present on machine and can be accessed by the pod
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab get events --sort-by=.lastTimestamp | grep -i error | tail -10[27m[83D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27mg[27me[27mt[27m [27me[27mv[27me[27mn[27mt[27ms[27m [27m-[27m-[27ms[27mo[27mr[27mt[27m-[27mb[27my[27m=[27m.[27ml[27ma[27ms[27mt[27mT[27mi[27mm[27me[27ms[27mt[27ma[27mm[27mp[27m [27m|[27m [27mg[27mr[27me[27mp[27m [27m-[27mi[27m [27me[27mr[27mr[27mo[27mr[27m [27m|[27m [27mt[27ma[27mi[27ml[27m [27m-[27m1[27m0[?2004l
+15s         Warning   Failed              pod/metrics-547dccf75-hpb55      Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "metrics-547dccf75-hpb55_debug-lab(db0a1aa8-e5be-4618-94db-5d3bc17071ec)", container: metrics)
+15s         Warning   Failed              pod/worker-5fcd6b9b6b-p46hp      Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "worker-5fcd6b9b6b-p46hp_debug-lab(dd02b65e-20d7-4603-b638-08f4ca66474c)", container: worker)
+13s         Warning   Failed              pod/gateway-5cbdcd4bf8-rsvlk     Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "gateway-5cbdcd4bf8-rsvlk_debug-lab(096c43ef-9742-40ea-b228-f4df198b4cbb)", container: gateway)
+10s         Warning   Failed              pod/backend-7948fd6b4b-hxt7w     Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "backend-7948fd6b4b-hxt7w_debug-lab(092911e3-e2ae-45d5-abe7-eb72e622f77e)", container: backend)
+9s          Warning   Failed              pod/migrate-r8gxh                Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "migrate-r8gxh_debug-lab(5769e6a2-f950-4b05-a950-b73f9ece961c)", container: migrate)
+4s          Warning   Failed              pod/reporter-6f8bff6b8d-tvsd7    Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "reporter-6f8bff6b8d-tvsd7_debug-lab(479209b0-b773-4331-90c0-08e3310b2f48)", container: reporter)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mdocker buildx imagetools inspect docker.io/ebinterview/eb-debug-app:1.0.1 --format '{{json .Image.config.User}}'[27m[112D[27md[27mo[27mc[27mk[27me[27mr[27m [27mb[27mu[27mi[27ml[27md[27mx[27m [27mi[27mm[27ma[27mg[27me[27mt[27mo[27mo[27ml[27ms[27m [27mi[27mn[27ms[27mp[27me[27mc[27mt[27m [27md[27mo[27mc[27mk[27me[27mr[27m.[27mi[27mo[27m/[27me[27mb[27mi[27mn[27mt[27me[27mr[27mv[27mi[27me[27mw[27m/[27me[27mb[27m-[27md[27me[27mb[27mu[27mg[27m-[27ma[27mp[27mp[27m:[27m1[27m.[27m0[27m.[27m1[27m [27m-[27m-[27mf[27mo[27mr[27mm[27ma[27mt[27m [27m'[27m{[27m{[27mj[27ms[27mo[27mn[27m [27m.[27mI[27mm[27ma[27mg[27me[27m.[27mc[27mo[27mn[27mf[27mi[27mg[27m.[27mU[27ms[27me[27mr[27m}[27m}[27m'[?2004l
+ERROR: template: :1:13: executing "" at <.Image.config.User>: can't evaluate field config in type *v1.Image
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004hcclear[?2004l
+[3J[H[2J[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mdocker buildx imagetools inspect docker.io/ebinterview/eb-debug-app:1.0.1 --format '{{json .Image.Config.User}}'[27m[112D[27md[27mo[27mc[27mk[27me[27mr[27m [27mb[27mu[27mi[27ml[27md[27mx[27m [27mi[27mm[27ma[27mg[27me[27mt[27mo[27mo[27ml[27ms[27m [27mi[27mn[27ms[27mp[27me[27mc[27mt[27m [27md[27mo[27mc[27mk[27me[27mr[27m.[27mi[27mo[27m/[27me[27mb[27mi[27mn[27mt[27me[27mr[27mv[27mi[27me[27mw[27m/[27me[27mb[27m-[27md[27me[27mb[27mu[27mg[27m-[27ma[27mp[27mp[27m:[27m1[27m.[27m0[27m.[27m1[27m [27m-[27m-[27mf[27mo[27mr[27mm[27ma[27mt[27m [27m'[27m{[27m{[27mj[27ms[27mo[27mn[27m [27m.[27mI[27mm[27ma[27mg[27me[27m.[27mC[27mo[27mn[27mf[27mi[27mg[27m.[27mU[27ms[27me[27mr[27m}[27m}[27m'[?2004l
+"nonroot"[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mdocker create --platform linux/amd64 --name eb-inspect docker.io/ebinterview/eb-debug-app:1.0.1 >/dev/null && docker cp eb-inspect:/etc/passwd - | tar -x[7mO[7mf - | grep nonroot; docker rm eb-inspect >/dev/null[27m[K[A[19D[27md[27mo[27mc[27mk[27me[27mr[27m [27mc[27mr[27me[27ma[27mt[27me[27m [27m-[27m-[27mp[27ml[27ma[27mt[27mf[27mo[27mr[27mm[27m [27ml[27mi[27mn[27mu[27mx[27m/[27ma[27mm[27md[27m6[27m4[27m [27m-[27m-[27mn[27ma[27mm[27me[27m [27me[27mb[27m-[27mi[27mn[27ms[27mp[27me[27mc[27mt[27m [27md[27mo[27mc[27mk[27me[27mr[27m.[27mi[27mo[27m/[27me[27mb[27mi[27mn[27mt[27me[27mr[27mv[27mi[27me[27mw[27m/[27me[27mb[27m-[27md[27me[27mb[27mu[27mg[27m-[27ma[27mp[27mp[27m:[27m1[27m.[27m0[27m.[27m1[27m [27m>[27m/[27md[27me[27mv[27m/[27mn[27mu[27ml[27ml[27m [27m&[27m&[27m [27md[27mo[27mc[27mk[27me[27mr[27m [27mc[27mp[27m [27me[27mb[27m-[27mi[27mn[27ms[27mp[27me[27mc[27mt[27m:[27m/[27me[27mt[27mc[27m/[27mp[27ma[27ms[27ms[27mw[27md[27m [27m-[27m [27m|[27m [27mt[27ma[27mr[27m [27m-[27mxO[27mf[27m [27m-[27m [27m|[27m [27mg[27mr[27me[27mp[27m [27mn[27mo[27mn[27mr[27mo[27mo[27mt[27m;[27m [27md[27mo[27mc[27mk[27me[27mr[27m [27mr[27mm[27m [27me[27mb[27m-[27mi[27mn[27ms[27mp[27me[27mc[27mt[27m [27m>[27m/[27md[27me[27mv[27m/[27mn[27mu[27ml[27ml[?2004l
+nonroot:x:65532:65532:nonroot:/home/nonroot:/sbin/nologin
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mperl -pi -e 's/^( *)runAsNonRoot: true *$/$1runAsNonRoot: true\n$1runAsUser: 65532\n$1runAsGroup: 65532/' broken-chart/templates/*.yaml[27m[135D[27mp[27me[27mr[27ml[27m [27m-[27mp[27mi[27m [27m-[27me[27m [27m'[27ms[27m/[27m^[27m([27m [27m*[27m)[27mr[27mu[27mn[27mA[27ms[27mN[27mo[27mn[27mR[27mo[27mo[27mt[27m:[27m [27mt[27mr[27mu[27me[27m [27m*[27m$[27m/[27m$[27m1[27mr[27mu[27mn[27mA[27ms[27mN[27mo[27mn[27mR[27mo[27mo[27mt[27m:[27m [27mt[27mr[27mu[27me[27m\[27mn[27m$[27m1[27mr[27mu[27mn[27mA[27ms[27mU[27ms[27me[27mr[27m:[27m [27m6[27m5[27m5[27m3[27m2[27m\[27mn[27m$[27m1[27mr[27mu[27mn[27mA[27ms[27mG[27mr[27mo[27mu[27mp[27m:[27m [27m6[27m5[27m5[27m3[27m2[27m/[27m'[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m/[27mt[27me[27mm[27mp[27ml[27ma[27mt[27me[27ms[27m/[27m*[27m.[27my[27ma[27mm[27ml[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff --stat broken-chart && helm template debug-lab broken-chart | grep -c 'runAsUser: 65532'[27m[97D[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27m-[27m-[27ms[27mt[27ma[27mt[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mh[27me[27ml[27mm[27m [27mt[27me[27mm[27mp[27ml[27ma[27mt[27me[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m|[27m [27mg[27mr[27me[27mp[27m [27m-[27mc[27m [27m'[27mr[27mu[27mn[27mA[27ms[27mU[27ms[27me[27mr[27m:[27m [27m6[27m5[27m5[27m3[27m2[27m'[?2004l
+[?1h= lab/broken-chart/templates/backend.yaml     | 2 [32m++[m[m
+ lab/broken-chart/templates/gateway.yaml     | 2 [32m++[m[m
+ lab/broken-chart/templates/metrics.yaml     | 2 [32m++[m[m
+ lab/broken-chart/templates/migrate-job.yaml | 2 [32m++[m[m
+ lab/broken-chart/templates/reporter.yaml    | 2 [32m++[m[m
+ lab/broken-chart/templates/worker.yaml      | 2 [32m++[m[m
+ 6 files changed, 12 insertions(+)[m
+[K[?1l>6
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit add broken-chart && git commit -m "lab: set runAsUser 65532 so runAsNonRoot can be verified (image USER is non-numeric)"[27m[124D[27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27ms[27me[27mt[27m [27mr[27mu[27mn[27mA[27ms[27mU[27ms[27me[27mr[27m [27m6[27m5[27m5[27m3[27m2[27m [27ms[27mo[27m [27mr[27mu[27mn[27mA[27ms[27mN[27mo[27mn[27mR[27mo[27mo[27mt[27m [27mc[27ma[27mn[27m [27mb[27me[27m [27mv[27me[27mr[27mi[27mf[27mi[27me[27md[27m [27m([27mi[27mm[27ma[27mg[27me[27m [27mU[27mS[27mE[27mR[27m [27mi[27ms[27m [27mn[27mo[27mn[27m-[27mn[27mu[27mm[27me[27mr[27mi[27mc[27m)[27m"[?2004l
+[main 388882d] lab: set runAsUser 65532 so runAsNonRoot can be verified (image USER is non-numeric)
+ 6 files changed, 12 insertions(+)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh up[27m[16D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mu[27mp[?2004l
+==> applying cluster environment (cluster-state/)
+limitrange/debug-lab-guardrails unchanged
+namespace/debug-lab unchanged
+==> installing the broken chart
+level=WARN msg="upgrade failed" name=debug-lab error="server-side apply failed for object debug-lab/migrate batch/v1, Kind=Job: Job.batch \"migrate\" is invalid: spec.template: Invalid value: {\"labels\":{\"app\":\"migrate\",\"batch.kubernetes.io/controller-uid\":\"61ec70bc-6ed6-42b9-977b-8b5d4b40c35c\",\"batch.kubernetes.io/job-name\":\"migrate\",\"controller-uid\":\"61ec70bc-6ed6-42b9-977b-8b5d4b40c35c\",\"job-name\":\"migrate\"},\"Spec\":{\"Volumes\":null,\"InitContainers\":null,\"Containers\":[{\"Name\":\"migrate\",\"Image\":\"docker.io/ebinterview/eb-debug-app:1.0.1\",\"Command\":null,\"Args\":null,\"WorkingDir\":\"\",\"Ports\":null,\"EnvFrom\":null,\"Env\":[{\"Name\":\"APP_MODE\",\"Value\":\"migrate\",\"ValueFrom\":null},{\"Name\":\"APP_NAME\",\"Value\":\"migrate\",\"ValueFrom\":null},{\"Name\":\"VERSION\",\"Value\":\"2.0.0\",\"ValueFrom\":null}],\"Resources\":{\"Limits\":{\"cpu\":\"200m\",\"memory\":\"128Mi\"},\"Requests\":{\"cpu\":\"50m\",\"memory\":\"64Mi\"},\"Claims\":null},\"ResizePolicy\":null,\"RestartPolicy\":null,\"RestartPolicyRules\":null,\"VolumeMounts\":null,\"VolumeDevices\":null,\"LivenessProbe\":null,\"ReadinessProbe\":null,\"StartupProbe\":null,\"Lifecycle\":null,\"TerminationMessagePath\":\"/dev/termination-log\",\"TerminationMessagePolicy\":\"File\",\"ImagePullPolicy\":\"IfNotPresent\",\"SecurityContext\":{\"Capabilities\":{\"Add\":null,\"Drop\":[\"ALL\"]},\"Privileged\":null,\"SELinuxOptions\":null,\"WindowsOptions\":null,\"RunAsUser\":65532,\"RunAsGroup\":65532,\"RunAsNonRoot\":true,\"ReadOnlyRootFilesystem\":true,\"AllowPrivilegeEscalation\":false,\"ProcMount\":null,\"SeccompProfile\":null,\"AppArmorProfile\":null},\"Stdin\":false,\"StdinOnce\":false,\"TTY\":false}],\"EphemeralContainers\":null,\"RestartPolicy\":\"Never\",\"TerminationGracePeriodSeconds\":30,\"ActiveDeadlineSeconds\":null,\"DNSPolicy\":\"ClusterFirst\",\"NodeSelector\":null,\"ServiceAccountName\":\"\",\"DeprecatedServiceAccount\":\"\",\"AutomountServiceAccountToken\":null,\"NodeName\":\"\",\"HostNetwork\":false,\"HostPID\":false,\"HostIPC\":false,\"ShareProcessNamespace\":null,\"SecurityContext\":{\"SELinuxOptions\":null,\"WindowsOptions\":null,\"RunAsUser\":null,\"RunAsGroup\":null,\"RunAsNonRoot\":null,\"SupplementalGroups\":null,\"SupplementalGroupsPolicy\":null,\"FSGroup\":null,\"Sysctls\":null,\"FSGroupChangePolicy\":null,\"SeccompProfile\":null,\"AppArmorProfile\":null,\"SELinuxChangePolicy\":null},\"ImagePullSecrets\":null,\"Hostname\":\"\",\"Subdomain\":\"\",\"Affinity\":null,\"SchedulerName\":\"default-scheduler\",\"Tolerations\":null,\"HostAliases\":null,\"PriorityClassName\":\"\",\"Priority\":null,\"DNSConfig\":null,\"ReadinessGates\":null,\"RuntimeClassName\":null,\"EnableServiceLinks\":null,\"PreemptionPolicy\":null,\"Overhead\":null,\"TopologySpreadConstraints\":null,\"SetHostnameAsFQDN\":null,\"OS\":null,\"HostUsers\":null,\"SchedulingGates\":null,\"ResourceClaims\":null,\"Resources\":null,\"HostnameOverride\":null,\"SchedulingGroup\":null,\"EvictionResponders\":null}}: field is immutable"
+Error: UPGRADE FAILED: server-side apply failed for object debug-lab/migrate batch/v1, Kind=Job: Job.batch "migrate" is invalid: spec.template: Invalid value: {"labels":{"app":"migrate","batch.kubernetes.io/controller-uid":"61ec70bc-6ed6-42b9-977b-8b5d4b40c35c","batch.kubernetes.io/job-name":"migrate","controller-uid":"61ec70bc-6ed6-42b9-977b-8b5d4b40c35c","job-name":"migrate"},"Spec":{"Volumes":null,"InitContainers":null,"Containers":[{"Name":"migrate","Image":"docker.io/ebinterview/eb-debug-app:1.0.1","Command":null,"Args":null,"WorkingDir":"","Ports":null,"EnvFrom":null,"Env":[{"Name":"APP_MODE","Value":"migrate","ValueFrom":null},{"Name":"APP_NAME","Value":"migrate","ValueFrom":null},{"Name":"VERSION","Value":"2.0.0","ValueFrom":null}],"Resources":{"Limits":{"cpu":"200m","memory":"128Mi"},"Requests":{"cpu":"50m","memory":"64Mi"},"Claims":null},"ResizePolicy":null,"RestartPolicy":null,"RestartPolicyRules":null,"VolumeMounts":null,"VolumeDevices":null,"LivenessProbe":null,"ReadinessProbe":null,"StartupProbe":null,"Lifecycle":null,"TerminationMessagePath":"/dev/termination-log","TerminationMessagePolicy":"File","ImagePullPolicy":"IfNotPresent","SecurityContext":{"Capabilities":{"Add":null,"Drop":["ALL"]},"Privileged":null,"SELinuxOptions":null,"WindowsOptions":null,"RunAsUser":65532,"RunAsGroup":65532,"RunAsNonRoot":true,"ReadOnlyRootFilesystem":true,"AllowPrivilegeEscalation":false,"ProcMount":null,"SeccompProfile":null,"AppArmorProfile":null},"Stdin":false,"StdinOnce":false,"TTY":false}],"EphemeralContainers":null,"RestartPolicy":"Never","TerminationGracePeriodSeconds":30,"ActiveDeadlineSeconds":null,"DNSPolicy":"ClusterFirst","NodeSelector":null,"ServiceAccountName":"","DeprecatedServiceAccount":"","AutomountServiceAccountToken":null,"NodeName":"","HostNetwork":false,"HostPID":false,"HostIPC":false,"ShareProcessNamespace":null,"SecurityContext":{"SELinuxOptions":null,"WindowsOptions":null,"RunAsUser":null,"RunAsGroup":null,"RunAsNonRoot":null,"SupplementalGroups":null,"SupplementalGroupsPolicy":null,"FSGroup":null,"Sysctls":null,"FSGroupChangePolicy":null,"SeccompProfile":null,"AppArmorProfile":null,"SELinuxChangePolicy":null},"ImagePullSecrets":null,"Hostname":"","Subdomain":"","Affinity":null,"SchedulerName":"default-scheduler","Tolerations":null,"HostAliases":null,"PriorityClassName":"","Priority":null,"DNSConfig":null,"ReadinessGates":null,"RuntimeClassName":null,"EnableServiceLinks":null,"PreemptionPolicy":null,"Overhead":null,"TopologySpreadConstraints":null,"SetHostnameAsFQDN":null,"OS":null,"HostUsers":null,"SchedulingGates":null,"ResourceClaims":null,"Resources":null,"HostnameOverride":null,"SchedulingGroup":null,"EvictionResponders":null}}: field is immutable
+
+[2mhelm reported an error. That is not your machine misbehaving —[0m
+[2mit is part of the exercise. Read the error; it is evidence.[0m
+
+Lab is (partially) installed. Investigate with kubectl, fix the chart,
+re-run './scenario.sh up' to apply your fixes, and './scenario.sh verify'
+to check progress.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh verify[27m[20D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mv[27me[27mr[27mi[27mf[27my[?2004l
+==> verifying goal state in namespace debug-lab
+  [31mFAIL[0m  migrate Job has not completed (does it exist? did the chart even install cleanly?)
+  [31mFAIL[0m  deployment backend: 0/1 ready
+  [31mFAIL[0m  deployment gateway: 0/1 ready
+  [31mFAIL[0m  deployment worker: 0/1 ready
+  [31mFAIL[0m  deployment reporter: 0/1 ready
+  [31mFAIL[0m  deployment metrics: 0/1 ready
+  [32mPASS[0m  no pods in CrashLoopBackOff
+  [31mFAIL[0m  ServiceAccount debug-lab/reporter cannot list pods
+  [31mFAIL[0m  backend does not answer on http://backend:8080/healthz
+  [31mFAIL[0m  gateway /status does not report backend=ok
+  [31mFAIL[0m  reporter /report does not return a pod count
+
+[31m10 check(s) failing[0m, 1 passing. Keep digging — every failure is a symptom.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab get pods[27m[29D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27mg[27me[27mt[27m [27mp[27mo[27md[27ms[?2004l
+NAME                        READY   STATUS                       RESTARTS     AGE
+backend-6865788b54-m6clb    0/1     Running                      0            12s
+backend-7948fd6b4b-hxt7w    0/1     CreateContainerConfigError   0            7m33s
+gateway-5cbdcd4bf8-rsvlk    0/1     CreateContainerConfigError   0            7m33s
+gateway-676cfd854-rdskt     0/1     Running                      0            11s
+metrics-547dccf75-hpb55     0/1     CreateContainerConfigError   0            7m33s
+migrate-r8gxh               0/1     CreateContainerConfigError   0            2m53s
+reporter-6f8bff6b8d-tvsd7   0/1     CreateContainerConfigError   0            7m33s
+reporter-74bf5fb96-hvhrl    0/1     Running                      0            11s
+worker-5fcd6b9b6b-p46hp     0/1     CreateContainerConfigError   0            7m33s
+worker-644f6d84cd-frzmh     0/1     CrashLoopBackOff             1 (8s ago)   11s
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004hcclear[?2004l
+[3J[H[2J[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab delete job migrate[27m[39D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27md[27me[27ml[27me[27mt[27me[27m [27mj[27mo[27mb[27m [27mm[27mi[27mg[27mr[27ma[27mt[27me[?2004l
+job.batch "migrate" deleted from debug-lab namespace
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh up[27m[16D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mu[27mp[?2004l
+==> applying cluster environment (cluster-state/)
+limitrange/debug-lab-guardrails unchanged
+namespace/debug-lab unchanged
+==> installing the broken chart
+Release "debug-lab" has been upgraded. Happy Helming!
+NAME: debug-lab
+LAST DEPLOYED: Fri Nov 20 17:13:51 2026
+NAMESPACE: [36mdebug-lab[0m
+STATUS: [32mdeployed[0m
+REVISION: 5
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+debug-lab installed into namespace debug-lab.
+
+Goal state:
+  * migrate Job: Completed
+  * backend, gateway, worker, reporter, metrics: all pods Running and 1/1 Ready
+  * gateway /status reports {"self":"ok","backend":"ok",...}
+
+Check your progress at any time:
+  ./scenario.sh verify
+
+Lab is (partially) installed. Investigate with kubectl, fix the chart,
+re-run './scenario.sh up' to apply your fixes, and './scenario.sh verify'
+to check progress.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab logs backend-6865788b54-m6clb[27m[50D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27ml[27mo[27mg[27ms[27m [27mb[27ma[27mc[27mk[27me[27mn[27md[27m-[27m6[27m8[27m6[27m5[27m7[27m8[27m8[27mb[27m5[27m4[27m-[27mm[27m6[27mc[27ml[27mb[?2004l
+2026/11/20 11:42:19 eb-debug-app 2.0.0 starting: mode=api pod=backend-6865788b54-m6clb listening on :8081 (image default is 8081; set PORT to override)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab describe pod backend-6865788b54-m6clb | tail -8[27m[68D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27md[27me[27ms[27mc[27mr[27mi[27mb[27me[27m [27mp[27mo[27md[27m [27mb[27ma[27mc[27mk[27me[27mn[27md[27m-[27m6[27m8[27m6[27m5[27m7[27m8[27m8[27mb[27m5[27m4[27m-[27mm[27m6[27mc[27ml[27mb[27m [27m|[27m [27mt[27ma[27mi[27ml[27m [27m-[27m8[?2004l
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  102s               default-scheduler  Successfully assigned debug-lab/backend-6865788b54-m6clb to demo-control-plane
+  Normal   Pulled     101s               kubelet            spec.containers{backend}: Container image "docker.io/ebinterview/eb-debug-app:1.0.1" already present on machine and can be accessed by the pod
+  Normal   Created    101s               kubelet            spec.containers{backend}: Container created
+  Normal   Started    101s               kubelet            spec.containers{backend}: Container started
+  Warning  Unhealthy  4s (x19 over 94s)  kubelet            spec.containers{backend}: Readiness probe failed: Get "http://10.244.0.29:8080/healthz": dial tcp 10.244.0.29:8080: connect: connection refused
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab logs worker-644f6d84cd-frzmh --previous[27m[60D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27ml[27mo[27mg[27ms[27m [27mw[27mo[27mr[27mk[27me[27mr[27m-[27m6[27m4[27m4[27mf[27m6[27md[27m8[27m4[27mc[27md[27m-[27mf[27mr[27mz[27mm[27mh[27m [27m-[27m-[27mp[27mr[27me[27mv[27mi[27mo[27mu[27ms[?2004l
+2026/11/20 11:43:51 FATAL: worker could not initialise its cache: mkdir /var/cache/app: read-only file system — the process needs a writable directory at /var/cache/app (mount a volume there, or set CACHE_DIR)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab describe pod worker-644f6d84cd-frzmh | grep -A6 'Last State'[27m[81D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27md[27me[27ms[27mc[27mr[27mi[27mb[27me[27m [27mp[27mo[27md[27m [27mw[27mo[27mr[27mk[27me[27mr[27m-[27m6[27m4[27m4[27mf[27m6[27md[27m8[27m4[27mc[27md[27m-[27mf[27mr[27mz[27mm[27mh[27m [27m|[27m [27mg[27mr[27me[27mp[27m [27m-[27mA[27m6[27m [27m'[27mL[27ma[27ms[27mt[27m [27mS[27mt[27ma[27mt[27me[27m'[?2004l
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Fri, 20 Nov 2026 17:13:51 +0530
+      Finished:     Fri, 20 Nov 2026 17:13:51 +0530
+    Ready:          False
+    Restart Count:  4
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab get events --sort-by=.lastTimestamp | grep -v Normal | tail -25[27m[84D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27mg[27me[27mt[27m [27me[27mv[27me[27mn[27mt[27ms[27m [27m-[27m-[27ms[27mo[27mr[27mt[27m-[27mb[27my[27m=[27m.[27ml[27ma[27ms[27mt[27mT[27mi[27mm[27me[27ms[27mt[27ma[27mm[27mp[27m [27m|[27m [27mg[27mr[27me[27mp[27m [27m-[27mv[27m [27mN[27mo[27mr[27mm[27ma[27ml[27m [27m|[27m [27mt[27ma[27mi[27ml[27m [27m-[27m2[27m5[?2004l
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+4m1s        Warning   Failed              pod/metrics-547dccf75-hpb55      Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "metrics-547dccf75-hpb55_debug-lab(db0a1aa8-e5be-4618-94db-5d3bc17071ec)", container: metrics)
+4m1s        Warning   Failed              pod/worker-5fcd6b9b6b-p46hp      Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "worker-5fcd6b9b6b-p46hp_debug-lab(dd02b65e-20d7-4603-b638-08f4ca66474c)", container: worker)
+3m50s       Warning   Failed              pod/reporter-6f8bff6b8d-tvsd7    Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "reporter-6f8bff6b8d-tvsd7_debug-lab(479209b0-b773-4331-90c0-08e3310b2f48)", container: reporter)
+3m46s       Warning   Failed              pod/gateway-5cbdcd4bf8-rsvlk     Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "gateway-5cbdcd4bf8-rsvlk_debug-lab(096c43ef-9742-40ea-b228-f4df198b4cbb)", container: gateway)
+3m44s       Warning   Failed              pod/backend-7948fd6b4b-hxt7w     Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "backend-7948fd6b4b-hxt7w_debug-lab(092911e3-e2ae-45d5-abe7-eb72e622f77e)", container: backend)
+114s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-z76tv" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+114s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-hkcks" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+114s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-jm7dq" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+114s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-b9nbl" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+114s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-hc6kf" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+114s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-hxp5j" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+114s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-nbrrw" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+114s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-l577n" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+113s        Warning   FailedCreate        replicaset/metrics-749f5448c9    Error creating: pods "metrics-749f5448c9-2tsf5" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+32s         Warning   FailedCreate        replicaset/metrics-749f5448c9    (combined from similar events): Error creating: pods "metrics-749f5448c9-slgzv" is forbidden: maximum cpu usage per Container is 1, but limit is 4
+32s         Warning   Failed              pod/migrate-r8gxh                Error: container has runAsNonRoot and image has non-numeric user (nonroot), cannot verify user is non-root (pod: "migrate-r8gxh_debug-lab(5769e6a2-f950-4b05-a950-b73f9ece961c)", container: migrate)
+18s         Warning   BackOff             pod/worker-644f6d84cd-frzmh      Back-off restarting failed container worker in pod worker-644f6d84cd-frzmh_debug-lab(ba5d1be1-8663-4f46-b846-b3d0c40cd4f7)
+3s          Warning   Unhealthy           pod/reporter-74bf5fb96-hvhrl     Readiness probe failed: Get "http://10.244.0.31:8080/healthz": dial tcp 10.244.0.31:8080: connect: connection refused
+2s          Warning   Unhealthy           pod/gateway-676cfd854-rdskt      Readiness probe failed: Get "http://10.244.0.28:8080/healthz": dial tcp 10.244.0.28:8080: connect: connection refused
+1s          Warning   Unhealthy           pod/backend-6865788b54-m6clb     Readiness probe failed: Get "http://10.244.0.29:8080/healthz": dial tcp 10.244.0.29:8080: connect: connection refused
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab get pods[27m[29D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27mg[27me[27mt[27m [27mp[27mo[27md[27ms[?2004l
+NAME                        READY   STATUS                       RESTARTS      AGE
+backend-6865788b54-m6clb    0/1     Running                      0             2m
+backend-7948fd6b4b-hxt7w    0/1     CreateContainerConfigError   0             9m21s
+gateway-5cbdcd4bf8-rsvlk    0/1     CreateContainerConfigError   0             9m21s
+gateway-676cfd854-rdskt     0/1     Running                      0             119s
+metrics-547dccf75-hpb55     0/1     CreateContainerConfigError   0             9m21s
+migrate-ctzln               0/1     Completed                    0             25s
+reporter-6f8bff6b8d-tvsd7   0/1     CreateContainerConfigError   0             9m21s
+reporter-74bf5fb96-hvhrl    0/1     Running                      0             119s
+worker-5fcd6b9b6b-p46hp     0/1     CreateContainerConfigError   0             9m21s
+worker-644f6d84cd-frzmh     0/1     CrashLoopBackOff             4 (25s ago)   119s
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab logs job/migrate[27m[37D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27ml[27mo[27mg[27ms[27m [27mj[27mo[27mb[27m/[27mm[27mi[27mg[27mr[27ma[27mt[27me[?2004l
+2026/11/20 11:43:52 eb-debug-app 2.0.0: migration starting (app=migrate, 2s of very important work)
+2026/11/20 11:43:54 migration complete
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004hcclear[?2004l
+[3J[H[2J[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mperl -pi -e 's/^( *)env: *$/$1env:\n$1  - name: PORT\n$1    value: {{ .Values.common.port | quote }}/' broken-chart/templates/{backend,gateway,worker,rep[7mo[7mrter,metrics}.yaml[27m[K[A[14C[27mp[27me[27mr[27ml[27m [27m-[27mp[27mi[27m [27m-[27me[27m [27m'[27ms[27m/[27m^[27m([27m [27m*[27m)[27me[27mn[27mv[27m:[27m [27m*[27m$[27m/[27m$[27m1[27me[27mn[27mv[27m:[27m\[27mn[27m$[27m1[27m [27m [27m-[27m [27mn[27ma[27mm[27me[27m:[27m [27mP[27mO[27mR[27mT[27m\[27mn[27m$[27m1[27m [27m [27m [27m [27mv[27ma[27ml[27mu[27me[27m:[27m [27m{[27m{[27m [27m.[27mV[27ma[27ml[27mu[27me[27ms[27m.[27mc[27mo[27mm[27mm[27mo[27mn[27m.[27mp[27mo[27mr[27mt[27m [27m|[27m [27mq[27mu[27mo[27mt[27me[27m [27m}[27m}[27m/[27m'[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m/[27mt[27me[27mm[27mp[27ml[27ma[27mt[27me[27ms[27m/[27m{[27mb[27ma[27mc[27mk[27me[27mn[27md[27m,[27mg[27ma[27mt[27me[27mw[27ma[27my[27m,[27mw[27mo[27mr[27mk[27me[27mr[27m,[27mr[27me[27mpo[27mr[27mt[27me[27mr[27m,[27mm[27me[27mt[27mr[27mi[27mc[27ms[27m}[27m.[27my[27ma[27mm[27ml[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff --stat broken-chart && git add broken-chart && git commit -m "lab: pass PORT from common.port (image listens on 8081 by default, chart probes 80[7m8[7m0)"[27m[K[A[29C[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27m-[27m-[27ms[27mt[27ma[27mt[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27mp[27ma[27ms[27ms[27m [27mP[27mO[27mR[27mT[27m [27mf[27mr[27mo[27mm[27m [27mc[27mo[27mm[27mm[27mo[27mn[27m.[27mp[27mo[27mr[27mt[27m [27m([27mi[27mm[27ma[27mg[27me[27m [27ml[27mi[27ms[27mt[27me[27mn[27ms[27m [27mo[27mn[27m [27m8[27m0[27m8[27m1[27m [27mb[27my[27m [27md[27me[27mf[27ma[27mu[27ml[27mt[27m,[27m [27mc[27mh[27ma[27mr[27mt[27m [27mp[27mr[27mo[27mb[27me[27ms[27m [27m8[27m08[27m0[27m)[27m"[?2004l
+[?1h= lab/broken-chart/templates/backend.yaml  | 2 [32m++[m[m
+ lab/broken-chart/templates/gateway.yaml  | 2 [32m++[m[m
+ lab/broken-chart/templates/metrics.yaml  | 2 [32m++[m[m
+ lab/broken-chart/templates/reporter.yaml | 2 [32m++[m[m
+ lab/broken-chart/templates/worker.yaml   | 2 [32m++[m[m
+ 5 files changed, 10 insertions(+)[m
+[K[?1l>[main 00d1c87] lab: pass PORT from common.port (image listens on 8081 by default, chart probes 8080)
+ 5 files changed, 10 insertions(+)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mprintf '          volumeMounts:\n            - name: cache\n              mountPath: /var/cache/app\n      volumes:\n        - name: cache\n          emp[7mt[7myDir: {}\n' >> broken-chart/templates/worker.yaml[27m[K[A[17D[27mp[27mr[27mi[27mn[27mt[27mf[27m [27m'[27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27mv[27mo[27ml[27mu[27mm[27me[27mM[27mo[27mu[27mn[27mt[27ms[27m:[27m\[27mn[27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27m-[27m [27mn[27ma[27mm[27me[27m:[27m [27mc[27ma[27mc[27mh[27me[27m\[27mn[27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27mm[27mo[27mu[27mn[27mt[27mP[27ma[27mt[27mh[27m:[27m [27m/[27mv[27ma[27mr[27m/[27mc[27ma[27mc[27mh[27me[27m/[27ma[27mp[27mp[27m\[27mn[27m [27m [27m [27m [27m [27m [27mv[27mo[27ml[27mu[27mm[27me[27ms[27m:[27m\[27mn[27m [27m [27m [27m [27m [27m [27m [27m [27m-[27m [27mn[27ma[27mm[27me[27m:[27m [27mc[27ma[27mc[27mh[27me[27m\[27mn[27m [27m [27m [27m [27m [27m [27m [27m [27m [27m [27me[27mm[27mpt[27my[27mD[27mi[27mr[27m:[27m [27m{[27m}[27m\[27mn[27m'[27m [27m>[27m>[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m/[27mt[27me[27mm[27mp[27ml[27ma[27mt[27me[27ms[27m/[27mw[27mo[27mr[27mk[27me[27mr[27m.[27my[27ma[27mm[27ml[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff broken-chart && git add broken-chart && git commit -m "lab: emptyDir at /var/cache/app for worker (read-only root fs)"[27m[127D[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27me[27mm[27mp[27mt[27my[27mD[27mi[27mr[27m [27ma[27mt[27m [27m/[27mv[27ma[27mr[27m/[27mc[27ma[27mc[27mh[27me[27m/[27ma[27mp[27mp[27m [27mf[27mo[27mr[27m [27mw[27mo[27mr[27mk[27me[27mr[27m [27m([27mr[27me[27ma[27md[27m-[27mo[27mn[27ml[27my[27m [27mr[27mo[27mo[27mt[27m [27mf[27ms[27m)[27m"[?2004l
+[?1h=[1mdiff --git a/lab/broken-chart/templates/worker.yaml b/lab/broken-chart/templates/worker.yaml[m[m
+[1mindex aa538cc..857a059 100644[m[m
+[1m--- a/lab/broken-chart/templates/worker.yaml[m[m
+[1m+++ b/lab/broken-chart/templates/worker.yaml[m[m
+[36m@@ -47,3 +47,9 @@[m [mspec:[m[m
+               drop: ["ALL"][m[m
+           resources:[m[m
+             {{- toYaml .Values.worker.resources | nindent 12 }}[m[m
+[32m+[m[32m          volumeMounts:[m[m
+[32m+[m[32m            - name: cache[m[m
+[32m+[m[32m              mountPath: /var/cache/app[m[m
+[32m+[m[32m      volumes:[m[m
+[32m+[m[32m        - name: cache[m[m
+[32m+[m[32m          emptyDir: {}[m[m
+[K[?1l>[main 82cdfce] lab: emptyDir at /var/cache/app for worker (read-only root fs)
+ 1 file changed, 6 insertions(+)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mperl -0pi -e 's/(metrics:.*?requests:\n\s*cpu: )"2"(.*?limits:\n\s*cpu: )"4"/${1}"50m"${2}"200m"/s' broken-chart/values.yaml[27m[124D[27mp[27me[27mr[27ml[27m [27m-[27m0[27mp[27mi[27m [27m-[27me[27m [27m'[27ms[27m/[27m([27mm[27me[27mt[27mr[27mi[27mc[27ms[27m:[27m.[27m*[27m?[27mr[27me[27mq[27mu[27me[27ms[27mt[27ms[27m:[27m\[27mn[27m\[27ms[27m*[27mc[27mp[27mu[27m:[27m [27m)[27m"[27m2[27m"[27m([27m.[27m*[27m?[27ml[27mi[27mm[27mi[27mt[27ms[27m:[27m\[27mn[27m\[27ms[27m*[27mc[27mp[27mu[27m:[27m [27m)[27m"[27m4[27m"[27m/[27m$[27m{[27m1[27m}[27m"[27m5[27m0[27mm[27m"[27m$[27m{[27m2[27m}[27m"[27m2[27m0[27m0[27mm[27m"[27m/[27ms[27m'[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m/[27mv[27ma[27ml[27mu[27me[27ms[27m.[27my[27ma[27mm[27ml[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff broken-chart && git add broken-chart && git commit -m "lab: metrics cpu 50m/200m, was 2/4 which the LimitRange max of 1 rejects"[27m[137D[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27mm[27me[27mt[27mr[27mi[27mc[27ms[27m [27mc[27mp[27mu[27m [27m5[27m0[27mm[27m/[27m2[27m0[27m0[27mm[27m,[27m [27mw[27ma[27ms[27m [27m2[27m/[27m4[27m [27mw[27mh[27mi[27mc[27mh[27m [27mt[27mh[27me[27m [27mL[27mi[27mm[27mi[27mt[27mR[27ma[27mn[27mg[27me[27m [27mm[27ma[27mx[27m [27mo[27mf[27m [27m1[27m [27mr[27me[27mj[27me[27mc[27mt[27ms[27m"[?2004l
+[?1h=[1mdiff --git a/lab/broken-chart/values.yaml b/lab/broken-chart/values.yaml[m[m
+[1mindex 957713c..c49e911 100644[m[m
+[1m--- a/lab/broken-chart/values.yaml[m[m
+[1m+++ b/lab/broken-chart/values.yaml[m[m
+[36m@@ -81,10 +81,10 @@[m [mmetrics:[m[m
+     VERSION: "2.0.0"[m[m
+   resources:[m[m
+     requests:[m[m
+[31m-      cpu: "2"[m[m
+[32m+[m[32m      cpu: "50m"[m[m
+       memory: "64Mi"[m[m
+     limits:[m[m
+[31m-      cpu: "4"[m[m
+[32m+[m[32m      cpu: "200m"[m[m
+       memory: "128Mi"[m[m
+ [m[m
+ migrate:[m[m
+[K[?1l>[main 3c67fcb] lab: metrics cpu 50m/200m, was 2/4 which the LimitRange max of 1 rejects
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh up[27m[16D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mu[27mp[?2004l
+==> applying cluster environment (cluster-state/)
+limitrange/debug-lab-guardrails unchanged
+namespace/debug-lab unchanged
+==> installing the broken chart
+Release "debug-lab" has been upgraded. Happy Helming!
+NAME: debug-lab
+LAST DEPLOYED: Fri Nov 20 17:15:42 2026
+NAMESPACE: [36mdebug-lab[0m
+STATUS: [32mdeployed[0m
+REVISION: 6
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+debug-lab installed into namespace debug-lab.
+
+Goal state:
+  * migrate Job: Completed
+  * backend, gateway, worker, reporter, metrics: all pods Running and 1/1 Ready
+  * gateway /status reports {"self":"ok","backend":"ok",...}
+
+Check your progress at any time:
+  ./scenario.sh verify
+
+Lab is (partially) installed. Investigate with kubectl, fix the chart,
+re-run './scenario.sh up' to apply your fixes, and './scenario.sh verify'
+to check progress.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh verify[27m[20D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mv[27me[27mr[27mi[27mf[27my[?2004l
+==> verifying goal state in namespace debug-lab
+  [32mPASS[0m  migrate Job completed
+  [31mFAIL[0m  deployment backend: 0/1 ready
+  [31mFAIL[0m  deployment gateway: 0/1 ready
+  [31mFAIL[0m  deployment worker: 0/1 ready
+  [31mFAIL[0m  deployment reporter: 0/1 ready
+  [31mFAIL[0m  deployment metrics: 0/1 ready
+  [31mFAIL[0m  1 pod(s) in CrashLoopBackOff
+  [31mFAIL[0m  ServiceAccount debug-lab/reporter cannot list pods
+  [31mFAIL[0m  backend does not answer on http://backend:8080/healthz
+  [31mFAIL[0m  gateway /status does not report backend=ok
+  [31mFAIL[0m  reporter /report does not return a pod count
+
+[31m10 check(s) failing[0m, 1 passing. Keep digging — every failure is a symptom.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab get pods[27m[29D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27mg[27me[27mt[27m [27mp[27mo[27md[27ms[?2004l
+NAME                        READY   STATUS      RESTARTS   AGE
+backend-7584d7d4cb-7rbvb    1/1     Running     0          20s
+gateway-55d6bff944-sck4s    0/1     Running     0          20s
+gateway-676cfd854-rdskt     0/1     Running     0          3m46s
+metrics-57c5895bdf-fcbwb    1/1     Running     0          20s
+migrate-ctzln               0/1     Completed   0          2m12s
+reporter-66cfdd58b6-qbb76   0/1     Running     0          20s
+reporter-74bf5fb96-hvhrl    0/1     Running     0          3m46s
+worker-765bd9bd4f-j7pqd     1/1     Running     0          20s
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004heear[?2004l
+zsh: command not found: ear
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab logs gateway-55d6bff944-sck4s --tail=2[27m[59D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27ml[27mo[27mg[27ms[27m [27mg[27ma[27mt[27me[27mw[27ma[27my[27m-[27m5[27m5[27md[27m6[27mb[27mf[27mf[27m9[27m4[27m4[27m-[27ms[27mc[27mk[27m4[27ms[27m [27m-[27m-[27mt[27ma[27mi[27ml[27m=[27m2[?2004l
+2026/11/20 11:46:59 readiness failed: backend not reachable: GET http://backend.default.svc:8080/healthz: Get "http://backend.default.svc:8080/healthz": dial tcp: lookup backend.default.svc on 10.96.0.10:53: no such host
+2026/11/20 11:46:59 GET /healthz -> 503 (from 10.244.0.1:54384)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab logs reporter-66cfdd58b6-qbb76 --tail=2[27m[60D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27ml[27mo[27mg[27ms[27m [27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[27m-[27m6[27m6[27mc[27mf[27md[27md[27m5[27m8[27mb[27m6[27m-[27mq[27mb[27mb[27m7[27m6[27m [27m-[27m-[27mt[27ma[27mi[27ml[27m=[27m2[?2004l
+2026/11/20 11:47:04 GET /healthz -> 503 (from 10.244.0.1:43664)
+2026/11/20 11:47:09 GET /healthz -> 503 (from 10.244.0.1:35190)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl auth can-i list pods -n debug-lab --as=system:serviceaccount:debug-lab:reporter[27m[87D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27ma[27mu[27mt[27mh[27m [27mc[27ma[27mn[27m-[27mi[27m [27ml[27mi[27ms[27mt[27m [27mp[27mo[27md[27ms[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27m-[27m-[27ma[27ms[27m=[27ms[27my[27ms[27mt[27me[27mm[27m:[27ms[27me[27mr[27mv[27mi[27mc[27me[27ma[27mc[27mc[27mo[27mu[27mn[27mt[27m:[27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m:[27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[?2004l
+no
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7msed -i '' 's#BACKEND_URL: "http://backend.default.svc:8080"#BACKEND_URL: "http://backend:8080"#' broken-chart/values.yaml[27m[121D[27ms[27me[27md[27m [27m-[27mi[27m [27m'[27m'[27m [27m'[27ms[27m#[27mB[27mA[27mC[27mK[27mE[27mN[27mD[27m_[27mU[27mR[27mL[27m:[27m [27m"[27mh[27mt[27mt[27mp[27m:[27m/[27m/[27mb[27ma[27mc[27mk[27me[27mn[27md[27m.[27md[27me[27mf[27ma[27mu[27ml[27mt[27m.[27ms[27mv[27mc[27m:[27m8[27m0[27m8[27m0[27m"[27m#[27mB[27mA[27mC[27mK[27mE[27mN[27mD[27m_[27mU[27mR[27mL[27m:[27m [27m"[27mh[27mt[27mt[27mp[27m:[27m/[27m/[27mb[27ma[27mc[27mk[27me[27mn[27md[27m:[27m8[27m0[27m8[27m0[27m"[27m#[27m'[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m/[27mv[27ma[27ml[27mu[27me[27ms[27m.[27my[27ma[27mm[27ml[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff broken-chart && git add broken-chart && git commit -m "lab: gateway BACKEND_URL pointed at the default namespace; use http://backend:8080"[27m[147D[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27mg[27ma[27mt[27me[27mw[27ma[27my[27m [27mB[27mA[27mC[27mK[27mE[27mN[27mD[27m_[27mU[27mR[27mL[27m [27mp[27mo[27mi[27mn[27mt[27me[27md[27m [27ma[27mt[27m [27mt[27mh[27me[27m [27md[27me[27mf[27ma[27mu[27ml[27mt[27m [27mn[27ma[27mm[27me[27ms[27mp[27ma[27mc[27me[27m;[27m [27mu[27ms[27me[27m [27mh[27mt[27mt[27mp[27m:[27m/[27m/[27mb[27ma[27mc[27mk[27me[27mn[27md[27m:[27m8[27m0[27m8[27m0[27m"[?2004l
+[?1h=[1mdiff --git a/lab/broken-chart/values.yaml b/lab/broken-chart/values.yaml[m[m
+[1mindex c49e911..ee51ce2 100644[m[m
+[1m--- a/lab/broken-chart/values.yaml[m[m
+[1m+++ b/lab/broken-chart/values.yaml[m[m
+[36m@@ -35,7 +35,7 @@[m [mgateway:[m[m
+     APP_MODE: "gateway"[m[m
+     APP_NAME: "gateway"[m[m
+     VERSION: "2.0.0"[m[m
+[31m-    BACKEND_URL: "http://backend.default.svc:8080"[m[m
+[32m+[m[32m    BACKEND_URL: "http://backend:8080"[m[m
+   resources:[m[m
+     requests:[m[m
+       cpu: "50m"[m[m
+[K[?1l>[main 88440e4] lab: gateway BACKEND_URL pointed at the default namespace; use http://backend:8080
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7msed -i '' 's/^    name: default$/    name: {{ .Values.reporter.serviceAccountName }}/' broken-chart/templates/rbac.yaml[27m[119D[27ms[27me[27md[27m [27m-[27mi[27m [27m'[27m'[27m [27m'[27ms[27m/[27m^[27m [27m [27m [27m [27mn[27ma[27mm[27me[27m:[27m [27md[27me[27mf[27ma[27mu[27ml[27mt[27m$[27m/[27m [27m [27m [27m [27mn[27ma[27mm[27me[27m:[27m [27m{[27m{[27m [27m.[27mV[27ma[27ml[27mu[27me[27ms[27m.[27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[27m.[27ms[27me[27mr[27mv[27mi[27mc[27me[27mA[27mc[27mc[27mo[27mu[27mn[27mt[27mN[27ma[27mm[27me[27m [27m}[27m}[27m/[27m'[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m/[27mt[27me[27mm[27mp[27ml[27ma[27mt[27me[27ms[27m/[27mr[27mb[27ma[27mc[27m.[27my[27ma[27mm[27ml[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff broken-chart && git add broken-chart && git commit -m "lab: gateway BACKEND_URL pointed at the default namespace; use http://backend:8080"[27m[147D[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27mg[27ma[27mt[27me[27mw[27ma[27my[27m [27mB[27mA[27mC[27mK[27mE[27mN[27mD[27m_[27mU[27mR[27mL[27m [27mp[27mo[27mi[27mn[27mt[27me[27md[27m [27ma[27mt[27m [27mt[27mh[27me[27m [27md[27me[27mf[27ma[27mu[27ml[27mt[27m [27mn[27ma[27mm[27me[27ms[27mp[27ma[27mc[27me[27m;[27m [27mu[27ms[27me[27m [27mh[27mt[27mt[27mp[27m:[27m/[27m/[27mb[27ma[27mc[27mk[27me[27mn[27md[27m:[27m8[27m0[27m8[27m0[27m"[?2004l
+[?1h=[1mdiff --git a/lab/broken-chart/templates/rbac.yaml b/lab/broken-chart/templates/rbac.yaml[m[m
+[1mindex fb4b7dc..2091b62 100644[m[m
+[1m--- a/lab/broken-chart/templates/rbac.yaml[m[m
+[1m+++ b/lab/broken-chart/templates/rbac.yaml[m[m
+[36m@@ -31,5 +31,5 @@[m [mroleRef:[m[m
+   name: reporter-read[m[m
+ subjects:[m[m
+   - kind: ServiceAccount[m[m
+[31m-    name: default[m[m
+[32m+[m[32m    name: {{ .Values.reporter.serviceAccountName }}[m[m
+     namespace: {{ .Release.Namespace }}[m[m
+[K[?1l>[main 4a81c2c] lab: gateway BACKEND_URL pointed at the default namespace; use http://backend:8080
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7msed -i '' 's/^    name: default$/    name: {{ .Values.reporter.serviceAccountName }}/' broken-chart/templates/rbac.yaml[27m[119D[27ms[27me[27md[27m [27m-[27mi[27m [27m'[27m'[27m [27m'[27ms[27m/[27m^[27m [27m [27m [27m [27mn[27ma[27mm[27me[27m:[27m [27md[27me[27mf[27ma[27mu[27ml[27mt[27m$[27m/[27m [27m [27m [27m [27mn[27ma[27mm[27me[27m:[27m [27m{[27m{[27m [27m.[27mV[27ma[27ml[27mu[27me[27ms[27m.[27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[27m.[27ms[27me[27mr[27mv[27mi[27mc[27me[27mA[27mc[27mc[27mo[27mu[27mn[27mt[27mN[27ma[27mm[27me[27m [27m}[27m}[27m/[27m'[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m/[27mt[27me[27mm[27mp[27ml[27ma[27mt[27me[27ms[27m/[27mr[27mb[27ma[27mc[27m.[27my[27ma[27mm[27ml[?2004l
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff broken-chart && git add broken-chart && git commit -m "lab: RoleBinding subject was the default SA; bind reporter-read to the reporter SA"[27m[147D[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27mR[27mo[27ml[27me[27mB[27mi[27mn[27md[27mi[27mn[27mg[27m [27ms[27mu[27mb[27mj[27me[27mc[27mt[27m [27mw[27ma[27ms[27m [27mt[27mh[27me[27m [27md[27me[27mf[27ma[27mu[27ml[27mt[27m [27mS[27mA[27m;[27m [27mb[27mi[27mn[27md[27m [27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[27m-[27mr[27me[27ma[27md[27m [27mt[27mo[27m [27mt[27mh[27me[27m [27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[27m [27mS[27mA[27m"[?2004l
+[?1h=[K[?1l>On branch main
+Your branch is ahead of 'origin/main' by 7 commits.
+  (use "git push" to publish your local commits)
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	[31mpart4-session.log[m
+
+nothing added to commit but untracked files present (use "git add" to track)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh up[27m[16D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mu[27mp[?2004l
+==> applying cluster environment (cluster-state/)
+limitrange/debug-lab-guardrails unchanged
+namespace/debug-lab unchanged
+==> installing the broken chart
+Release "debug-lab" has been upgraded. Happy Helming!
+NAME: debug-lab
+LAST DEPLOYED: Fri Nov 20 17:17:49 2026
+NAMESPACE: [36mdebug-lab[0m
+STATUS: [32mdeployed[0m
+REVISION: 7
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+debug-lab installed into namespace debug-lab.
+
+Goal state:
+  * migrate Job: Completed
+  * backend, gateway, worker, reporter, metrics: all pods Running and 1/1 Ready
+  * gateway /status reports {"self":"ok","backend":"ok",...}
+
+Check your progress at any time:
+  ./scenario.sh verify
+
+Lab is (partially) installed. Investigate with kubectl, fix the chart,
+re-run './scenario.sh up' to apply your fixes, and './scenario.sh verify'
+to check progress.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mgit diff broken-chart && git add broken-chart && git commit -m "lab: RoleBinding subject was the default SA; bind reporter-read to the reporter SA"[27m[147D[27mg[27mi[27mt[27m [27md[27mi[27mf[27mf[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27ma[27md[27md[27m [27mb[27mr[27mo[27mk[27me[27mn[27m-[27mc[27mh[27ma[27mr[27mt[27m [27m&[27m&[27m [27mg[27mi[27mt[27m [27mc[27mo[27mm[27mm[27mi[27mt[27m [27m-[27mm[27m [27m"[27ml[27ma[27mb[27m:[27m [27mR[27mo[27ml[27me[27mB[27mi[27mn[27md[27mi[27mn[27mg[27m [27ms[27mu[27mb[27mj[27me[27mc[27mt[27m [27mw[27ma[27ms[27m [27mt[27mh[27me[27m [27md[27me[27mf[27ma[27mu[27ml[27mt[27m [27mS[27mA[27m;[27m [27mb[27mi[27mn[27md[27m [27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[27m-[27mr[27me[27ma[27md[27m [27mt[27mo[27m [27mt[27mh[27me[27m [27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[27m [27mS[27mA[27m"[?2004l
+[?1h=[K[?1l>On branch main
+Your branch is ahead of 'origin/main' by 7 commits.
+  (use "git push" to publish your local commits)
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	[31mpart4-session.log[m
+
+nothing added to commit but untracked files present (use "git add" to track)
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl -n debug-lab wait --for=condition=available deploy --all --timeout=120s[27m[79D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27mw[27ma[27mi[27mt[27m [27m-[27m-[27mf[27mo[27mr[27m=[27mc[27mo[27mn[27md[27mi[27mt[27mi[27mo[27mn[27m=[27ma[27mv[27ma[27mi[27ml[27ma[27mb[27ml[27me[27m [27md[27me[27mp[27ml[27mo[27my[27m [27m-[27m-[27ma[27ml[27ml[27m [27m-[27m-[27mt[27mi[27mm[27me[27mo[27mu[27mt[27m=[27m1[27m2[27m0[27ms[?2004l
+deployment.apps/backend condition met
+deployment.apps/gateway condition met
+deployment.apps/metrics condition met
+timed out waiting for the condition on deployments/reporter
+timed out waiting for the condition on deployments/worker
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7mkubectl auth can-i list pods -n debug-lab --as=system:serviceaccount:debug-lab:reporter[27m[87D[27mk[27mu[27mb[27me[27mc[27mt[27ml[27m [27ma[27mu[27mt[27mh[27m [27mc[27ma[27mn[27m-[27mi[27m [27ml[27mi[27ms[27mt[27m [27mp[27mo[27md[27ms[27m [27m-[27mn[27m [27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m [27m-[27m-[27ma[27ms[27m=[27ms[27my[27ms[27mt[27me[27mm[27m:[27ms[27me[27mr[27mv[27mi[27mc[27me[27ma[27mc[27mc[27mo[27mu[27mn[27mt[27m:[27md[27me[27mb[27mu[27mg[27m-[27ml[27ma[27mb[27m:[27mr[27me[27mp[27mo[27mr[27mt[27me[27mr[?2004l
+yes
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h[7m./scenario.sh verify[27m[20D[27m.[27m/[27ms[27mc[27me[27mn[27ma[27mr[27mi[27mo[27m.[27ms[27mh[27m [27mv[27me[27mr[27mi[27mf[27my[?2004l
+==> verifying goal state in namespace debug-lab
+  [32mPASS[0m  migrate Job completed
+  [32mPASS[0m  deployment backend: 1/1 ready
+  [32mPASS[0m  deployment gateway: 1/1 ready
+  [32mPASS[0m  deployment worker: 1/1 ready
+  [31mFAIL[0m  deployment reporter: 0/1 ready
+  [32mPASS[0m  deployment metrics: 1/1 ready
+  [32mPASS[0m  no pods in CrashLoopBackOff
+  [32mPASS[0m  ServiceAccount debug-lab/reporter can list pods
+  [32mPASS[0m  backend answers on http://backend:8080/healthz
+  [32mPASS[0m  gateway /status reports backend=ok
+  [31mFAIL[0m  reporter /report does not return a pod count
+
+[31m2 check(s) failing[0m, 9 passing. Keep digging — every failure is a symptom.
+[1m[7m%[27m[1m[0m                                                                                                                                                                                          [0m[27m[24m[Jadmin@admins-MacBook-Pro-4 lab % [K[?2004h
