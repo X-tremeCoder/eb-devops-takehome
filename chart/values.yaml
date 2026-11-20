@@ -1,0 +1,33 @@
+replicaCount: 2
+
+image:
+  repository: demo-service
+  # setup.sh builds and loads the image with this exact tag.
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+# Rendered into a ConfigMap, exposed to the pod as APP_NAME / VERSION.
+config:
+  appName: demo
+  version: "0.1.0"
+
+# Must match the port gunicorn binds in service/Dockerfile.
+containerPort: 8080
+
+service:
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: demo.local
+
+# Measured with docker stats: ~46Mi idle, ~48Mi during a 2000 request burst,
+# CPU peaked around 230m in that burst. Reasoning is in the README.
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi

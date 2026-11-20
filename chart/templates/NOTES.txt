@@ -1,0 +1,8 @@
+{{ include "demo.fullname" . }} is installed in namespace {{ .Release.Namespace }}.
+
+Check it through the ingress:
+  curl -H 'Host: {{ .Values.ingress.host }}' http://localhost/
+
+Or without the ingress:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "demo.fullname" . }} 8080:{{ .Values.service.port }}
+  curl http://localhost:8080/
