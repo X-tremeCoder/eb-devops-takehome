@@ -47,3 +47,9 @@ spec:
               drop: ["ALL"]
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
+          volumeMounts:
+            - name: cache
+              mountPath: /var/cache/app
+      volumes:
+        - name: cache
+          emptyDir: {}
