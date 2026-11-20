@@ -119,7 +119,6 @@ I used Claude Code (Claude Opus 5.5) in my terminal.
   - The first local test of that looked broken. It was macOS file-sharing cache on the bind mount, not the app; retested with a Docker volume.
   - Helm 4 server-side apply conflict after `kubectl patch` (see above).
   - Trivy found fixable HIGHs, mostly in pip's vendored libraries. Removed pip from the runtime image and applied Debian updates.
-- **What I changed after reviewing the drafts:** TODO(Adarsh)
 - **Part 4:** I ran the lab in a recorded terminal (`lab/part4-session.log`). Every command, edit and commit in it is mine. I got the first defect from the helm error with a small hint. I have performed multiple steps to fix the issue. The reporter problem in the last section of FINDINGS was investigated: test pods, a throwaway cluster, a fake API server and disassembling the binary, all outside my recording. FINDINGS.md was drafted by me based on the session output and marks which outputs came from its checks.
 - **Part 5:** Claude drafted ANSWERS.md. I reviewed the orders and steps to be followed and performed it by understanding the order and the risks.
 - **README:** Claude drafted it from the test results; I edited it.
