@@ -1,0 +1,59 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e # v5.1.0
+        with:
+          version: v4.3.1
+
+      - name: helm lint
+        run: helm lint chart
+
+      - name: chart follows value overrides
+        run: |
+          helm template demo chart \
+            --set replicaCount=3 --set config.appName=ci-check \
+            --set ingress.host=ci.local > rendered.yaml
+          grep -q 'replicas: 3' rendered.yaml
+          grep -q 'APP_NAME: "ci-check"' rendered.yaml
+          grep -q 'host: "ci.local"' rendered.yaml
+
+      - name: shellcheck
+        run: shellcheck setup.sh
+
+  image:
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: build
+        run: docker build -t demo-service:ci service/
+
+      - name: smoke test
+        run: |
+          docker run -d --name svc -e APP_NAME=ci -e VERSION=1 -p 8080:8080 demo-service:ci
+          for i in $(seq 1 20); do curl -fs localhost:8080/healthz && break; sleep 1; done
+          curl -fs localhost:8080/ | grep -q '"app":"ci"'
+
+      # Trivy runs from its image pinned by digest rather than through
+      # trivy-action (that action had a security advisory, GHSA-9p44-j4g5-cfx5).
+      # --ignore-unfixed: fail on HIGH/CRITICAL we can actually fix. Debian
+      # CVEs with no fix released would otherwise keep the pipeline red.
+      - name: trivy scan
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb \
+            image --no-progress --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 demo-service:ci
