@@ -27,6 +27,8 @@ spec:
               value: "2.0.0"
           securityContext:
             runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
             capabilities:
